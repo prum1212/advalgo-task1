@@ -4,12 +4,19 @@ project(multigrep_gui LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Find OpenGL & Threads
+# Feature Toggle Flag
+option(ENABLE_BENCHMARK_SUITE "Compile internal benchmark suite into GUI" OFF)
+
+if(ENABLE_BENCHMARK_SUITE)
+    add_compile_definitions(ENABLE_BENCHMARK_SUITE)
+    message(STATUS "Benchmark Suite Enabled: -DENABLE_BENCHMARK_SUITE will be defined.")
+endif()
+
 find_package(OpenGL REQUIRED)
 find_package(Threads REQUIRED)
 
-# Fetch GLFW automatically
 include(FetchContent)
+
 FetchContent_Declare(
     glfw
     GIT_REPOSITORY https://github.com/glfw/glfw.git
@@ -17,7 +24,6 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(glfw)
 
-# Fetch Dear ImGui automatically
 FetchContent_Declare(
     imgui
     GIT_REPOSITORY https://github.com/ocornut/imgui.git
@@ -25,7 +31,6 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(imgui)
 
-# ImGui Core Sources
 set(IMGUI_SOURCES
     ${imgui_SOURCE_DIR}/imgui.cpp
     ${imgui_SOURCE_DIR}/imgui_draw.cpp
@@ -35,7 +40,11 @@ set(IMGUI_SOURCES
     ${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp
 )
 
-include_directories(include ${imgui_SOURCE_DIR} ${imgui_SOURCE_DIR}/backends)
+include_directories(
+    include 
+    ${imgui_SOURCE_DIR} 
+    ${imgui_SOURCE_DIR}/backends
+)
 
 add_executable(multigrep_gui 
     src/gui_main.cpp 
